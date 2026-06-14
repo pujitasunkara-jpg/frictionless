@@ -2,7 +2,7 @@
 
 ## What this is
 
-Focus is a simple web app that helps you stay productive. It uses a timer to help you work in short focus sessions and tracks your progress with streaks and XP.
+AutoFocus is a simple web app that helps you stay productive. It uses a timer to help you work in short focus sessions and tracks your progress with streaks and XP.
 
 The goal is to make it easy to start working without any setup or distractions.
 
