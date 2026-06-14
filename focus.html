@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FOCUS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    font-family: Inter, sans-serif;
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* wallpaper */
+    background-image: url("https://ilovewallpaper.com/cdn/shop/files/1-ClassicStripePastelPink_ILW50308_Thumbnail_WEB_7b2f5dad-df30-4ad0-9c3f-acb2792d2823.webp?v=1705668684");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .card {
+    width: 380px;
+    padding: 18px;
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+
+  /* 🌸 PINK TABS */
+  .nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .nav button {
+    flex: 1;
+    padding: 9px;
+    font-size: 11px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+
+    background: #ffd6e8; /* light pink */
+    color: #7a3b55;
+    font-weight: 600;
+
+    transition: 0.2s;
+  }
+
+  .nav button:hover {
+    background: #ffc2dd;
+    transform: scale(1.03);
+  }
+
+  /* pages */
+  .page { display: none; }
+  .show { display: block; }
+
+  h1 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: #6b2d4d;
+    letter-spacing: 2px;
+  }
+
+  .msg {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+    color: #5a2a40;
+  }
+
+  /* timer */
+  .timer {
+    font-size: 48px;
+    text-align: center;
+    font-weight: 700;
+    margin: 10px 0;
+    color: #7a2d52;
+  }
+
+  .bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+
+  .fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff9ec7, #ff6fae);
+    transition: 0.3s;
+  }
+
+  button.action {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .start {
+    background: #ff6fae;
+    color: white;
+  }
+
+  .pause {
+    background: rgba(255,255,255,0.6);
+    color: #7a2d52;
+  }
+
+  .reset {
+    background: #ff4d6d;
+    color: white;
+  }
+
+  .stats {
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+
+  .box {
+    background: rgba(255,255,255,0.7);
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    flex: 1;
+    margin: 4px;
+    color: #5a2a40;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    margin-top: 6px;
+    background: rgba(255,255,255,0.8);
+  }
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <!-- NAV -->
+  <div class="nav">
+    <button onclick="show('home')">Home</button>
+    <button onclick="show('timer')">Timer</button>
+    <button onclick="show('settings')">Settings</button>
+    <button onclick="show('block')">Block</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="home" class="page show">
+    <h1>FOCUS</h1>
+    <div class="msg" id="msg">stay locked in.</div>
+
+    <div class="stats">
+      <div class="box">🔥 <div id="streak">0</div> Streak</div>
+      <div class="box">⭐ <div id="level">1</div> Level</div>
+    </div>
+  </div>
+
+  <!-- TIMER -->
+  <div id="timer" class="page">
+    <div class="timer" id="time">25:00</div>
+
+    <div class="bar">
+      <div class="fill" id="fill"></div>
+    </div>
+
+    <button class="action start" onclick="start()">Start</button>
+    <button class="action pause" onclick="pause()">Pause</button>
+    <button class="action reset" onclick="reset()">Reset</button>
+
+    <div class="stats">
+      <div class="box">⏱ <div id="saved">0</div> min saved</div>
+      <div class="box">⚡ XP <div id="xp">0</div></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="page">
+    <h1>Settings</h1>
+    <div class="msg">customize focus time</div>
+    <input id="mins" type="number" value="25">
+  </div>
+
+  <!-- BLOCK -->
+  <div id="block" class="page">
+    <h1>BLOCKED</h1>
+    <div class="msg">
+      youtube • tiktok • instagram • reddit
+    </div>
+  </div>
+
+</div>
+
+<script>
+let base = 25 * 60;
+let time = base;
+let running = false;
+let interval;
+
+let xp = parseInt(localStorage.getItem("xp")) || 0;
+let level = parseInt(localStorage.getItem("level")) || 1;
+let streak = parseInt(localStorage.getItem("streak")) || 0;
+let saved = parseInt(localStorage.getItem("saved")) || 0;
+
+const messages = [
+  "stay locked in.",
+  "you’ve got this.",
+  "focus mode on.",
+  "build your future.",
+  "no distractions."
+];
+
+function show(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("show"));
+  document.getElementById(page).classList.add("show");
+}
+
+function update() {
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+
+  document.getElementById("time").innerText =
+    `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+
+  let progress = ((base - time) / base) * 100;
+  document.getElementById("fill").style.width = progress + "%";
+
+  document.getElementById("xp").innerText = xp;
+  document.getElementById("level").innerText = level;
+  document.getElementById("streak").innerText = streak;
+  document.getElementById("saved").innerText = saved;
+
+  document.getElementById("msg").innerText =
+    messages[Math.floor(Math.random() * messages.length)];
+}
+
+function start() {
+  if (running) return;
+  running = true;
+
+  interval = setInterval(() => {
+    if (time > 0) {
+      time--;
+      update();
+    } else {
+      complete();
+    }
+  }, 1000);
+}
+
+function pause() {
+  clearInterval(interval);
+  running = false;
+}
+
+function reset() {
+  pause();
+  time = base;
+  update();
+}
+
+function complete() {
+  pause();
+
+  streak++;
+  saved += 25;
+  xp += 10;
+
+  if (xp >= level * 30) {
+    level++;
+    xp = 0;
+  }
+
+  localStorage.setItem("xp", xp);
+  localStorage.setItem("level", level);
+  localStorage.setItem("streak", streak);
+  localStorage.setItem("saved", saved);
+
+  time = base;
+  update();
+}
+
+update();
+</script>
+
+</body>
+</html>
